@@ -1,5 +1,6 @@
 package com.faisaldev.workflow_engine.service.impl;
 
+import com.faisaldev.workflow_engine.dtos.ApprovalEmailDto;
 import com.faisaldev.workflow_engine.dtos.CompletedWorkflowDto;
 import com.faisaldev.workflow_engine.dtos.WorkflowItem;
 import com.faisaldev.workflow_engine.enums.OrderType;
@@ -98,8 +99,14 @@ public class WorkflowStepServiceImpl implements WorkflowStepService {
                                         .doOnSuccess(res -> {
                                                 // publish message to Topic to notify the Auth Service to send emails to
                                                 //  people/users with that Role
-
+                                                publishingService.sendWorkflowApprovalInfo(
+                                                        ApprovalEmailDto.builder()
+                                                                .profile(res.getApproverType().toString())
+                                                                .message("You have a request that is pending your approval please login to the portal to check.")
+                                                                .build()
+                                                );
                                         })
+                                        .doOnError(err -> log.error("Add WorkflowApprovalStep Error", err))
                                         .subscribe();
 
                             }
@@ -116,7 +123,17 @@ public class WorkflowStepServiceImpl implements WorkflowStepService {
                                     .orderType(workflow.getOrderType())
                                     .payload(approvalStepsDto.getPayload())
                                     .build();
-                            approvalStepsRepository.save(approvalSteps).subscribe();
+                            approvalStepsRepository.save(approvalSteps)
+                                    .doOnSuccess(res -> {
+                                        publishingService.sendWorkflowApprovalInfo(
+                                                ApprovalEmailDto.builder()
+                                                        .profile(res.getApproverType().toString())
+                                                        .message("You have a request that is pending your approval please login to the portal to check.")
+                                                        .build()
+                                        );
+                                    })
+                                    .doOnError(err -> log.error("Add WorkflowApprovalStep Error", err))
+                                    .subscribe();
 
                         }
 

@@ -1,6 +1,7 @@
 package com.faisaldev.workflow_engine.kafka;
 
 
+import com.faisaldev.workflow_engine.dtos.ApprovalEmailDto;
 import com.faisaldev.workflow_engine.dtos.CompletedWorkflowDto;
 import com.faisaldev.workflow_engine.dtos.EmailNotification;
 import com.google.gson.Gson;
@@ -32,9 +33,9 @@ public class PublishingService {
     }
 
 
-    public void sendEmailNotification(EmailNotification emailNotification ) {
+    public void sendWorkflowApprovalInfo(ApprovalEmailDto approvalEmailDto ) {
         Mono.fromRunnable(() -> {
-            streamBridge.send("sidian-email-topic", gson.toJson(emailNotification));
+            streamBridge.send("agent-connect-send-email-to-approvers-topic", gson.toJson(approvalEmailDto));
         })
                 .subscribeOn(Schedulers.boundedElastic())
                 .subscribe();
