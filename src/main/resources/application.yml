@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: workflow-engine
+  profiles:
+    active: dev
+
+
+server:
+  port: 7100

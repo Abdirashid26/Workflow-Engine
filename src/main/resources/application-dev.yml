@@ -1,0 +1,26 @@
+spring:
+  liquibase:
+    url: jdbc:postgresql://localhost:5432/Workflow_Db
+    user: postgres
+    password: faisal26
+    change-log: classpath:/db/changelog/db.changelog-master.yml
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/Workflow_Db
+    username: postgres
+    password: faisal26
+  data:
+    r2dbc:
+      repositories:
+        enabled: true
+  cloud:
+    stream:
+      kafka:
+        binder:
+          autoCreateTopics: true
+          brokers: 10.20.2.19:9092
+      bindings:
+        createItem-in-0:
+          destination: fa-create-item-topic
+          group: fe-create-item-group
+    function:
+      definition: createItem
