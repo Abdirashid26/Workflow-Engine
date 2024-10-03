@@ -1,6 +1,7 @@
 package com.faisaldev.workflow_engine.kafka;
 
 
+import com.faisaldev.workflow_engine.dtos.ApproveWorkflowStep;
 import com.faisaldev.workflow_engine.dtos.WorkflowItem;
 import com.faisaldev.workflow_engine.service.WorkflowService;
 import com.faisaldev.workflow_engine.service.WorkflowStepService;
@@ -30,6 +31,17 @@ public class SubscribingService {
         };
     }
 
+
+    /**
+     * Approve/Reject Workflow Step
+     */
+    @Bean
+    public Consumer<String> approveWorkflowStep(){
+        return payload -> {
+            ApproveWorkflowStep approveWorkflowStep = gson.fromJson(payload, ApproveWorkflowStep.class);
+            workflowStepService.approveWorkflowStep(approveWorkflowStep);
+        };
+    }
 
 
 

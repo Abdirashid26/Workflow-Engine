@@ -22,5 +22,8 @@ spring:
         createItem-in-0:
           destination: fa-create-item-topic
           group: fe-create-item-group
+        approveWorkflowStep-in-0:
+          destination: fa-workflow-engine-topic
+          group: fe-workflow-engine-group
     function:
-      definition: createItem
+      definition: createItem;approveWorkflowStep

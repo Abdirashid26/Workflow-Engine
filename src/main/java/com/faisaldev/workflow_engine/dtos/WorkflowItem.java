@@ -1,5 +1,6 @@
 package com.faisaldev.workflow_engine.dtos;
 
+import com.faisaldev.workflow_engine.enums.WorkflowStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,7 +20,7 @@ public class WorkflowItem {
     private UUID itemId;
     private Long workflowId;
     private String payload;
-    private String workflowStatus;  // Adjust this to the appropriate type if WorkflowStatus is an enum
+    private String workflowStatus = WorkflowStatus.PENDING.toString();  // Adjust this to the appropriate type if WorkflowStatus is an enum
     private String completedTopic;
 
 

@@ -1,6 +1,7 @@
 package com.faisaldev.workflow_engine.service.impl;
 
 import com.faisaldev.workflow_engine.dtos.ApprovalEmailDto;
+import com.faisaldev.workflow_engine.dtos.ApproveWorkflowStep;
 import com.faisaldev.workflow_engine.dtos.CompletedWorkflowDto;
 import com.faisaldev.workflow_engine.dtos.WorkflowItem;
 import com.faisaldev.workflow_engine.enums.OrderType;
@@ -147,6 +148,36 @@ public class WorkflowStepServiceImpl implements WorkflowStepService {
 
 
 
+    }
+
+    @Override
+    public void approveWorkflowStep(ApproveWorkflowStep approveWorkflowStep) {
+        approvalStepsRepository.findByItemIdAndWorkflowStatusAndApproverType(
+                UUID.fromString(approveWorkflowStep.getWorkflowItemId()),
+                WorkflowStatus.PENDING,
+                approveWorkflowStep.getApproverType()
+                ).
+                switchIfEmpty(Mono.error(new WorkflowNotFoundException("Sorry, but workflow approval step has been updated or does not exist")))
+                .flatMap(approvalSteps -> {
+                    if (approvalSteps.getWorkflowStatus().equals(WorkflowStatus.APPROVED)) {
+                        approvalSteps.setWorkflowStatus(WorkflowStatus.APPROVED);
+                        return approvalStepsRepository.save(approvalSteps);
+                    }else{
+                        // if rejected by even one then reject all the remaining
+                        return approvalStepsRepository.findByItemId(approvalSteps.getItemId())
+                                .map(approvalSteps1 -> {
+                                    approvalSteps1.setWorkflowStatus(WorkflowStatus.REJECTED);
+                                    return approvalSteps1;
+                                })
+                                .flatMap(approvalStepsRepository::save)
+                                .collectList();
+                    }
+                })
+                .doOnSuccess(res -> {
+                    log.info("Workflow Step status updated Successfully");
+                })
+                .doOnError(err -> log.error("Error : ",err))
+                .subscribe();
     }
 
 
