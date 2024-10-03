@@ -7,6 +7,7 @@ import com.faisaldev.workflow_engine.service.WorkflowService;
 import com.faisaldev.workflow_engine.service.WorkflowStepService;
 import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,7 @@ import java.util.function.Consumer;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class SubscribingService {
 
     private final Gson gson;
@@ -39,6 +41,7 @@ public class SubscribingService {
     public Consumer<String> approveWorkflowStep(){
         return payload -> {
             ApproveWorkflowStep approveWorkflowStep = gson.fromJson(payload, ApproveWorkflowStep.class);
+            log.info("Approving workflow step: {}", approveWorkflowStep.toString());
             workflowStepService.approveWorkflowStep(approveWorkflowStep);
         };
     }

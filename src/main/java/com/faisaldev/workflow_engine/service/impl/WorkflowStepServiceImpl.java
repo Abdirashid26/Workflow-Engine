@@ -159,7 +159,7 @@ public class WorkflowStepServiceImpl implements WorkflowStepService {
                 ).
                 switchIfEmpty(Mono.error(new WorkflowNotFoundException("Sorry, but workflow approval step has been updated or does not exist")))
                 .flatMap(approvalSteps -> {
-                    if (approvalSteps.getWorkflowStatus().equals(WorkflowStatus.APPROVED)) {
+                    if (approveWorkflowStep.getWorkflowStatus().equals(WorkflowStatus.APPROVED)) {
                         approvalSteps.setWorkflowStatus(WorkflowStatus.APPROVED);
                         return approvalStepsRepository.save(approvalSteps);
                     }else{
